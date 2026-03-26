@@ -1,0 +1,45 @@
+name: HTMLHint Check
+
+# 触发条件：每次 push 或 pull request 到 main 分支
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  htmlhint:
+    runs-on: ubuntu-latest
+
+    steps:
+    # 1. 拉取代码
+    - uses: actions/checkout@v3
+
+    # 2. 安装 Node.js
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+
+    # 3. 安装 HTMLHint
+    - name: Install HTMLHint
+      run: npm install -g htmlhint
+
+    # 4. 创建 HTMLHint 配置文件（可选，如果你想自定义规则）
+    - name: Create HTMLHint config
+      run: |
+        echo '{
+          "tagname-lowercase": true,
+          "attr-lowercase": true,
+          "attr-value-double-quotes": true,
+          "doctype-first": true,
+          "id-unique": true,
+          "img-alt-require": true,
+          "style-disabled": true,
+          "space-tab-mixed-disabled": "space",
+          "attr-no-duplication": true
+        }' > .htmlhintrc
+
+    # 5. 运行 HTMLHint 检查所有 HTML 文件
+    - name: Run HTMLHint
+      run: htmlhint "**/*.html"
